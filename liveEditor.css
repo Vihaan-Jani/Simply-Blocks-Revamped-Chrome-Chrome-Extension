@@ -1,0 +1,235 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root {
+    --text-gradient-color: rgb(129, 140, 248);
+}
+
+html,
+body {
+    width:100%;
+    height:100%;
+
+    overflow:hidden;
+
+}
+
+body{
+
+    font-family:-apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    background:#060814;
+
+    color:white;
+
+}
+
+/* Canvas */
+
+#nebulaCanvas{
+
+    position:fixed;
+
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    z-index:-2;
+
+}
+
+/* Grid Overlay */
+
+.grid{
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+
+        linear-gradient(rgba(255,255,255,.006) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.006) 1px,transparent 1px);
+
+    background-size:28px 28px;
+
+    z-index:-1;
+
+    pointer-events:none;
+
+}
+
+/* Center */
+
+.wrapper{
+
+    width:100%;
+    height:100%;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    padding:40px;
+
+}
+
+.content{
+
+    width:100%;
+    max-width:720px;
+
+    display:flex;
+    flex-direction:column;
+
+    align-items:center;
+
+    text-align:center;
+
+}
+
+/* Welcome */
+
+.subtitle{
+
+    font-size:.8rem;
+
+    letter-spacing:6px;
+
+    text-transform:uppercase;
+
+    color:#94a3b8;
+
+    margin-bottom:10px;
+
+}
+
+.title{
+
+    font-size:4rem;
+
+    font-weight:800;
+
+    letter-spacing:-2px;
+
+    line-height:1.05;
+
+    background:linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #d8b4fe 30%,
+        var(--text-gradient-color) 60%,
+        #7dd3fc 100%
+    );
+
+    background-size:300%;
+    background-clip: text;
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    animation:titleFlow 8s linear infinite;
+
+}
+
+/* Card */
+
+.begin-card{
+
+    margin-top:45px;
+
+    width:100%;
+    max-width:520px;
+
+    padding:20px 28px;
+
+    border-radius:18px;
+
+    cursor:pointer;
+
+    background:rgba(10,15,30,.45);
+
+    border:1px solid rgba(255,255,255,.07);
+
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+
+    box-shadow:
+
+        0 16px 35px rgba(0,0,0,.35),
+
+        inset 0 1px 0 rgba(255,255,255,.05);
+
+    transition:
+
+        transform .25s ease,
+
+        border-color .25s ease,
+
+        background .25s ease,
+
+        box-shadow .25s ease;
+
+}
+
+.begin-card:hover{
+
+    transform:translateY(-4px);
+
+    background:rgba(255,255,255,.05);
+
+    border-color:rgba(192,132,252,.35);
+
+    box-shadow:
+
+        0 22px 45px rgba(0,0,0,.45),
+
+        0 0 0 1px rgba(192,132,252,.10);
+
+}
+
+.begin-title{
+
+    font-size:1rem;
+
+    font-weight:600;
+
+    color:#f8fafc;
+
+}
+
+.begin-sub{
+
+    margin-top:6px;
+
+    font-size:.82rem;
+
+    color:#94a3b8;
+
+}
+
+@keyframes titleFlow{
+
+    from{
+
+        background-position:0%;
+
+    }
+
+    to{
+
+        background-position:300%;
+
+    }
+
+}

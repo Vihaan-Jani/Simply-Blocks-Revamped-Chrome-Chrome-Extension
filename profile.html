@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+    <header class="profile-header">
+        <img class="profile-image" id="profileImage" alt="" width="64" height="64">
+        <div class="profile-heading">
+            <p class="eyebrow">Your profile</p>
+            <h1 class="dashboard-title" id="profileName">Simply Blocks User</h1>
+            <p class="profile-email" id="profileEmail">Loading account...</p>
+        </div>
+    </header>
+
+    <main class="profile-content">
+        <section class="glass-card" aria-labelledby="preferencesTitle">
+            <h2 class="section-header" id="preferencesTitle">Color Preferences</h2>
+
+            <div class="preference-list">
+                <div class="preference-row">
+                    <span class="color-swatch" id="backgroundColorSwatch"></span>
+                    <span class="preference-meta">
+                        <span class="preference-title">Background Gradient</span>
+                        <span class="preference-value" id="backgroundColorValue"></span>
+                    </span>
+                </div>
+                <div class="preference-row">
+                    <span class="color-swatch" id="glowStartSwatch"></span>
+                    <span class="preference-meta">
+                        <span class="preference-title">Starting Gradient Color For Border</span>
+                        <span class="preference-value" id="glowStartValue"></span>
+                    </span>
+                </div>
+                <div class="preference-row">
+                    <span class="color-swatch" id="glowEndSwatch"></span>
+                    <span class="preference-meta">
+                        <span class="preference-title">Ending Gradient Color for Border</span>
+                        <span class="preference-value" id="glowEndValue"></span>
+                    </span>
+                </div>
+                <div class="preference-row">
+                    <span class="color-swatch" id="textColorSwatch"></span>
+                    <span class="preference-meta">
+                        <span class="preference-title">Accent Color for Text Gradient</span>
+                        <span class="preference-value" id="textColorValue"></span>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card" aria-labelledby="websiteStylesTitle">
+            <h2 class="section-header" id="websiteStylesTitle">Website Appearance</h2>
+
+            <label class="style-toggle-row" for="websiteStylesToggle">
+                <span class="preference-meta">
+                    <span class="preference-title">Custom Website UI</span>
+                    <span class="preference-value" id="websiteStylesStatus">
+                        Loading preference...
+                    </span>
+                </span>
+                <span class="toggle-control">
+                    <input
+                        id="websiteStylesToggle"
+                        type="checkbox"
+                        role="switch"
+                        aria-label="Use the Simply Blocks interface on Websites"
+                        aria-describedby="websiteStylesStatus"
+                    >
+                    <span class="toggle-track" aria-hidden="true"></span>
+                </span>
+            </label>
+
+        </section>
+
+        <section class="access-section">
+            <button
+                class="interactive-card"
+                id="accountAccessCard"
+                type="button"
+                aria-expanded="false"
+                aria-controls="accountAccessDetails"
+            >
+                <span class="preference-meta">
+                    <span class="preference-title">Simply Blocks Account Access</span>
+                    <span class="preference-value">View the access granted to Simply Blocks by your Google Account</span>
+                </span>
+                <span class="expand-icon" aria-hidden="true">+</span>
+            </button>
+
+            <div class="glass-card access-details" id="accountAccessDetails" hidden>
+                <h2 class="section-header">Google Account Scopes</h2>
+                <ul class="scope-list" id="scopeList"></ul>
+            </div>
+        </section>
+
+        <button class="interactive-card back-card" id="backToMainMenu" type="button">
+            <span class="preference-meta">
+                <span class="preference-title">Main Menu</span>
+                <span class="preference-value">Return to your Workspace Dashboard</span>
+            </span>
+            <span class="back-arrow" aria-hidden="true">←</span>
+        </button>
+
+        <button class="interactive-card sign-out-card" id="signOutButton" type="button">
+            <span class="preference-meta">
+                <span class="preference-title">Sign Out</span>
+                <span class="preference-value" id="signOutStatus">Sign out of Simply Blocks</span>
+            </span>
+            <span class="sign-out-icon" aria-hidden="true">↪</span>
+        </button>
+    </main>
+
+    <script src="theme.js"></script>
+    <script type="module" src="profilePage.js"></script>
+</body>
+</html>

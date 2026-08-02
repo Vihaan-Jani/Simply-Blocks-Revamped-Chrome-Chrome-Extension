@@ -1,0 +1,42 @@
+.signed-out-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(16px, 5vw, 28px);
+    overflow: hidden;
+}
+
+.sign-in-container {
+    width: 100%;
+    max-width: 420px;
+}
+
+.sign-in-card {
+    min-height: 96px;
+    padding: 20px;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+}
+
+.sign-in-card:focus-visible {
+    outline: 2px solid #818cf8;
+    outline-offset: 4px;
+}
+
+.sign-in-card[disabled] {
+    cursor: wait;
+    opacity: 0.75;
+}
+
+.howto-card {
+    margin-top: 12px;
+}
+
+.sign-in-error {
+    min-height: 1.25rem;
+    margin-top: 12px;
+    color: #fda4af;
+    font-size: 0.75rem;
+    text-align: center;
+}

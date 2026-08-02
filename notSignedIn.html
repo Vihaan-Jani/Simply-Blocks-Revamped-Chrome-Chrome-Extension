@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in to Simply Blocks</title>
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="notSignedIn.css">
+</head>
+<body class="signed-out-page">
+  <main class="sign-in-container">
+    <button class="interactive-card sign-in-card" id="googleSignIn" type="button">
+      <span class="card-meta">
+        <span class="card-title">Sign-in with Google</span>
+        <span class="card-desc">Sign-in to continue.</span>
+      </span>
+      <span class="status-badge" id="signInStatus">Continue</span>
+    </button>
+    <button class="interactive-card sign-in-card howto-card" id="googleHowTo" type="button">
+      <span class="card-meta">
+        <span class="card-title">How To Use Simply Blocks</span>
+        <span class="card-desc">Click here to Access a Simply Made User Guide</span>
+      </span>
+      <span class="status-badge" id="howToStatus">Open Guide</span>
+    </button>
+    <p class="sign-in-error" id="signInError" role="alert" aria-live="polite"></p>
+  </main>
+
+  <script type="module" src="notSignedIn.js"></script>
+</body>
+</html>

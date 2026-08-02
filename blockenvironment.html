@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Environment</title>
+    <link rel="stylesheet" href="newTab.css">
+    <link rel="stylesheet" href="blockenvironment.css">
+</head>
+<body>
+    <main id="blockCanvas" aria-label="Block environment"></main>
+    <div class="make-block-overlay" id="makeBlockOverlay" hidden>
+        <section class="make-block-dialog" role="dialog" aria-modal="true" aria-label="Manage Your Blocks">
+            <button class="make-block-close" id="closeMakeBlock" type="button" aria-label="Close Blocks" title="Close Blocks">&times;</button>
+            <iframe id="makeBlockFrame" src="makeBlock.html?embedded=1" title="Manage Your Blocks"></iframe>
+        </section>
+    </div>
+    <div class="file-block-overlay" id="fileBlockOverlay" hidden>
+        <section class="file-block-dialog" role="dialog" aria-modal="true" aria-labelledby="fileBlockTitle">
+            <button class="file-block-close" id="closeFileBlock" type="button" aria-label="Close File-Block">&times;</button>
+            <span class="file-block-kicker">Create a canvas block</span>
+            <h2 id="fileBlockTitle">Create a File-Block</h2>
+            <p>Choose the block type and its color. File-Blocks can be moved and connected, but do not open a URL.</p>
+            <div class="file-block-types" role="radiogroup" aria-label="File-Block type">
+                <button type="button" class="file-block-type selected" data-file-block-name="Save" role="radio" aria-checked="true">Save</button>
+                <button type="button" class="file-block-type" data-file-block-name="Export" role="radio" aria-checked="false">Export</button>
+                <button type="button" class="file-block-type" data-file-block-name="Import" role="radio" aria-checked="false">Import</button>
+            </div>
+            <label class="file-block-color-label" for="fileBlockColor">Block color</label>
+            <input id="fileBlockColor" class="file-block-color" type="color" value="#38bdf8">
+            <div class="file-block-picker" id="fileBlockPicker" hidden>
+                <button id="pickImportFile" class="file-block-pick" type="button">Pick Markdown</button>
+                <span id="pickedImportFile">No Markdown file selected</span>
+                <input id="importFileInput" type="file" accept=".md,text/markdown" hidden>
+            </div>
+            <label class="file-block-prompt" id="fileBlockPromptField" for="fileBlockPrompt" hidden>
+                Prompt added to the top
+                <textarea id="fileBlockPrompt" rows="5" maxlength="10000" placeholder="Example: Rewrite this document as a concise project brief."></textarea>
+            </label>
+            <button id="createFileBlock" class="file-block-create" type="button">Create File-Block</button>
+            <p id="fileBlockStatus" class="file-block-status" role="status" aria-live="polite"></p>
+        </section>
+    </div>
+    <div class="flow-save-overlay" id="flowSaveOverlay" hidden>
+        <section class="flow-save-dialog" role="dialog" aria-modal="true" aria-labelledby="flowSaveTitle">
+            <span class="file-block-kicker">Markdown flow</span>
+            <h2 id="flowSaveTitle">Save this file?</h2>
+            <p id="flowSaveDescription">Choose where you want to save the Markdown file.</p>
+            <label for="flowSaveName">File name</label>
+            <input id="flowSaveName" type="text" maxlength="160">
+            <div class="flow-save-actions">
+                <button id="flowSaveDrive" type="button">Google Drive</button>
+                <button id="flowSaveDownload" type="button">Download</button>
+                <button id="flowSaveEditor" type="button">Open in Live Editor</button>
+                <button id="flowSaveSkip" type="button">Skip</button>
+            </div>
+            <p id="flowSaveStatus" class="file-block-status" role="status" aria-live="polite"></p>
+        </section>
+    </div>
+    <div class="edit-block-overlay" id="editBlockOverlay" hidden>
+        <section class="edit-block-dialog" role="dialog" aria-modal="true" aria-labelledby="editBlockTitle">
+            <button class="file-block-close" id="closeEditBlock" type="button" aria-label="Close block editor">&times;</button>
+            <span class="file-block-kicker">Block settings</span>
+            <h2 id="editBlockTitle">Edit Block</h2>
+            <form id="editBlockForm">
+                <label id="editBlockNameField">Block name<input id="editBlockName" type="text" maxlength="50" required></label>
+                <label id="editBlockUrlField">URL<input id="editBlockUrl" type="url"></label>
+                <label id="editBlockTypeField" hidden>File-Block type
+                    <select id="editBlockType">
+                        <option value="Save">Save</option>
+                        <option value="Import">Import</option>
+                        <option value="Export">Export</option>
+                    </select>
+                </label>
+                <label id="editBlockPromptField" hidden>Prompt added to the top
+                    <textarea id="editBlockPrompt" rows="5" maxlength="10000" placeholder="Example: Rewrite this document as a concise project brief."></textarea>
+                </label>
+                <label>Block color<input id="editBlockColor" type="color"></label>
+                <div class="edit-block-actions">
+                    <button class="edit-block-delete" id="deleteEditedBlock" type="button">Delete Block</button>
+                    <button class="file-block-create" type="submit">Save Changes</button>
+                </div>
+                <p id="editBlockStatus" class="file-block-status" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+    </div>
+    <script src="theme.js"></script>
+    <script type="module" src="editorWorkspacePanel.js"></script>
+    <script type="module" src="blockEnvironmentSidebar.js"></script>
+    <script src="websiteStyles.js"></script>
+</body>
+</html>

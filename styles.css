@@ -1,0 +1,132 @@
+:root {
+    --simply-blocks-text-gradient-color: rgb(129, 140, 248);
+}
+
+html.simply-blocks-styles-enabled {
+    --simply-blocks-background-start: #030204;
+    --simply-blocks-background-end: #0f0114;
+    --simply-blocks-background-middle: var(
+        --simply-blocks-middle-background-color,
+        rgb(34, 10, 56)
+    );
+    --simply-blocks-grid-color: rgba(255, 255, 255, 0.006);
+    --simply-blocks-body-text: #f1f5f9;
+    --simply-blocks-heading-start: #ffffff;
+    --simply-blocks-heading-second: #d8b4fe;
+    --simply-blocks-heading-end: #7dd3fc;
+    --simply-blocks-link-color: #7dd3fc;
+}
+
+html.simply-blocks-styles-enabled,
+html.simply-blocks-styles-enabled body {
+    min-height: 100%;
+    background-color: var(--simply-blocks-background-start) !important;
+}
+
+html.simply-blocks-styles-enabled body {
+    min-height: 100vh;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif !important;
+    font-weight: 400;
+    color: var(--simply-blocks-body-text) !important;
+    background-image:
+        linear-gradient(
+            var(--simply-blocks-grid-color) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            var(--simply-blocks-grid-color) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            135deg,
+            var(--simply-blocks-background-start) 0%,
+            var(--simply-blocks-background-middle) 48%,
+            var(--simply-blocks-background-end) 100%
+        ) !important;
+    background-position: center !important;
+    background-size:
+        28px 28px,
+        28px 28px,
+        100% 100% !important;
+    background-attachment: fixed !important;
+}
+
+html.simply-blocks-styles-enabled body :where(
+    p,
+    li,
+    dd,
+    dt,
+    label,
+    blockquote,
+    figcaption,
+    summary,
+    address,
+    time
+) {
+    font-family: inherit;
+    font-weight: 400;
+    color: var(--simply-blocks-body-text);
+}
+
+html.simply-blocks-styles-enabled body :where(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    [role="heading"]
+) {
+    font-family: inherit;
+    font-weight: 800;
+    line-height: 1.05;
+    color: var(--simply-blocks-heading-start);
+    background-image: linear-gradient(
+        135deg,
+        var(--simply-blocks-heading-start) 0%,
+        var(--simply-blocks-heading-second) 30%,
+        var(--simply-blocks-text-gradient-color) 60%,
+        var(--simply-blocks-heading-end) 100%
+    );
+    background-size: 300%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: simplyBlocksTitleFlow 8s linear infinite;
+}
+
+html.simply-blocks-styles-enabled body a {
+    color: var(--simply-blocks-link-color);
+}
+
+@keyframes simplyBlocksTitleFlow {
+    from {
+        background-position: 0%;
+    }
+
+    to {
+        background-position: 300%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.simply-blocks-styles-enabled body :where(
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        [role="heading"]
+    ) {
+        animation: none;
+    }
+}

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Tab</title>
+    <link rel="stylesheet" href="newTab.css">
+</head>
+<body>
+    <button class="new-tab-side-panel-toggle" id="newTabSidePanelToggle" type="button" aria-label="Toggle Simply Blocks Side Panel" aria-pressed="false" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M9 4v16"></path><path d="M6 9h0M6 13h0"></path></svg>
+        <span>Simply Blocks</span>
+    </button>
+    <div class = "ui">
+        <div class = "wrapper">
+            <p class = "message">
+                Welcome to Chrome Revamped
+            </p>
+            <p class = "desc">
+                Brought to you by Simply Blocks
+            </p>
+            <div class = "contain">
+                <form class="search-form" action="https://google.com/search" method="GET">
+                    <input type = "text", name = "q", class="search-input" autofocus autocomplete="off" title="Search"></input>
+                </form>
+            </div>
+            <div id="shortcut-grid" class="shortcut-grid" aria-label="Shortcuts"></div>
+        </div>
+        <div class="side-panel">
+            <div class="panel-content">
+                <div class="panel-header">
+                    <p>New tab settings</p>
+                    <h2>Customize</h2>
+                </div>
+
+                <div class="panel-tabs" role="tablist" aria-label="Customize new tab">
+                    <button class="panel-tab active" id="appearance-tab" type="button" role="tab" aria-selected="true" aria-controls="appearance-panel">Appearance</button>
+                    <button class="panel-tab" id="shortcuts-tab" type="button" role="tab" aria-selected="false" aria-controls="shortcuts-panel">Shortcuts</button>
+                </div>
+
+                <div id="appearance-panel" class="tab-panel active" role="tabpanel" aria-labelledby="appearance-tab">
+
+                <section class="setting-card" aria-labelledby="background-color-title">
+                    <div class="setting-card-header">
+                        <div>
+                            <h3 id="background-color-title">Background color</h3>
+                            <p>Adjust the Main Gradient Color</p>
+                        </div>
+                        <span id="middle-color-preview" class="color-preview" aria-hidden="true"></span>
+                    </div>
+
+                    <div class="rgb-controls">
+                        <label>
+                            <span class="channel-heading">
+                                <span>Red</span>
+                                <output id="red-output">34</output>
+                            </span>
+                            <input id="red-value" class="rgb-slider red-slider" type="range" min="0" max="255" value="34">
+                        </label>
+                        <label>
+                            <span class="channel-heading">
+                                <span>Green</span>
+                                <output id="green-output">10</output>
+                            </span>
+                            <input id="green-value" class="rgb-slider green-slider" type="range" min="0" max="255" value="10">
+                        </label>
+                        <label>
+                            <span class="channel-heading">
+                                <span>Blue</span>
+                                <output id="blue-output">56</output>
+                            </span>
+                            <input id="blue-value" class="rgb-slider blue-slider" type="range" min="0" max="255" value="56">
+                        </label>
+                    </div>
+
+                    <output id="middle-color-value">rgb(34, 10, 56)</output>
+                </section>
+
+                <section class="setting-card" aria-labelledby="glow-start-title">
+                    <div class="setting-card-header">
+                        <div>
+                            <h3 id="glow-start-title">Linear Gradient Start</h3>
+                            <p>Adjust the First Color of the Gradient</p>
+                        </div>
+                        <span id="glow-start-preview" class="color-preview glow-start-preview" aria-hidden="true"></span>
+                    </div>
+
+                    <div class="rgb-controls">
+                        <label>
+                            <span class="channel-heading"><span>Red</span><output id="glow-start-red-output">115</output></span>
+                            <input id="glow-start-red" class="rgb-slider red-slider" type="range" min="0" max="255" value="115">
+                        </label>
+                        <label>
+                            <span class="channel-heading"><span>Green</span><output id="glow-start-green-output">0</output></span>
+                            <input id="glow-start-green" class="rgb-slider green-slider" type="range" min="0" max="255" value="0">
+                        </label>
+                        <label>
+                            <span class="channel-heading"><span>Blue</span><output id="glow-start-blue-output">255</output></span>
+                            <input id="glow-start-blue" class="rgb-slider blue-slider" type="range" min="0" max="255" value="255">
+                        </label>
+                    </div>
+
+                    <output id="glow-start-value">rgb(115, 0, 255)</output>
+                </section>
+
+                <section class="setting-card" aria-labelledby="glow-end-title">
+                    <div class="setting-card-header">
+                        <div>
+                            <h3 id="glow-end-title">Linear Gradient End</h3>
+                            <p>Adjust the Final Color of the Gradient</p>
+                        </div>
+                        <span id="glow-end-preview" class="color-preview glow-end-preview" aria-hidden="true"></span>
+                    </div>
+
+                    <div class="rgb-controls">
+                        <label>
+                            <span class="channel-heading"><span>Red</span><output id="glow-end-red-output">255</output></span>
+                            <input id="glow-end-red" class="rgb-slider red-slider" type="range" min="0" max="255" value="255">
+                        </label>
+                        <label>
+                            <span class="channel-heading"><span>Green</span><output id="glow-end-green-output">0</output></span>
+                            <input id="glow-end-green" class="rgb-slider green-slider" type="range" min="0" max="255" value="0">
+                        </label>
+                        <label>
+                            <span class="channel-heading"><span>Blue</span><output id="glow-end-blue-output">255</output></span>
+                            <input id="glow-end-blue" class="rgb-slider blue-slider" type="range" min="0" max="255" value="255">
+                        </label>
+                    </div>
+
+                    <output id="glow-end-value">rgb(255, 0, 255)</output>
+                </section>
+
+                <section class="setting-card" aria-labelledby="text-gradient-title">
+                    <div class="setting-card-header">
+                        <div>
+                            <h3 id="text-gradient-title">Text Gradient Color</h3>
+                            <p>Adjust the Accent of the Main Title</p>
+                        </div>
+                        <span id="text-gradient-preview" class="color-preview text-gradient-preview" aria-hidden="true"></span>
+                    </div>
+
+                    <div class="rgb-controls">
+                        <label>
+                            <span class="channel-heading"><span>Red</span><output id="text-gradient-red-output">129</output></span>
+                            <input id="text-gradient-red" class="rgb-slider red-slider" type="range" min="0" max="255" value="129">
+                        </label>
+                        <label>
+                            <span class="channel-heading"><span>Green</span><output id="text-gradient-green-output">140</output></span>
+                            <input id="text-gradient-green" class="rgb-slider green-slider" type="range" min="0" max="255" value="140">
+                        </label>
+                        <label>
+                            <span class="channel-heading"><span>Blue</span><output id="text-gradient-blue-output">248</output></span>
+                            <input id="text-gradient-blue" class="rgb-slider blue-slider" type="range" min="0" max="255" value="248">
+                        </label>
+                    </div>
+
+                    <output id="text-gradient-value">rgb(129, 140, 248)</output>
+                </section>
+                </div>
+
+                <div id="shortcuts-panel" class="tab-panel" role="tabpanel" aria-labelledby="shortcuts-tab" hidden>
+                    <section class="setting-card shortcut-settings" aria-labelledby="shortcut-settings-title">
+                        <div class="setting-card-header">
+                            <div>
+                                <h3 id="shortcut-settings-title">Your shortcuts</h3>
+                                <p>Add quick links beneath the search bar.</p>
+                            </div>
+                        </div>
+                        <div class="shortcut-actions">
+                            <button type="button" data-shortcut-action="add">Add Shortcut</button>
+                            <button type="button" data-shortcut-action="remove">Remove Shortcut</button>
+                            <button type="button" data-shortcut-action="edit">Edit Shortcut</button>
+                            <button id="google-howto-button" type="button" hidden>How to Connect Google</button>
+                        </div>
+                        <div id="panel-shortcut-list" class="panel-shortcut-list"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <div class = "customize" data-tooltip = "Customize">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <button class="new-tab-fullscreen-toggle" id="newTabFullscreenToggle" type="button" data-tooltip="Toggle Full-Screen" aria-label="Toggle Full-Screen" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"></path></svg>
+        </button>
+    </div>
+
+    <dialog id="shortcut-dialog" class="shortcut-dialog">
+        <form id="shortcut-form" method="dialog">
+            <div class="dialog-heading">
+                <div>
+                    <p>Shortcuts</p>
+                    <h2 id="shortcut-dialog-title">Add shortcut</h2>
+                </div>
+                <button class="dialog-close" type="button" aria-label="Close">&times;</button>
+            </div>
+            <div id="shortcut-fields">
+                <label for="shortcut-name">Name</label>
+                <input id="shortcut-name" maxlength="40" autocomplete="off" placeholder="My shortcut">
+                <label for="shortcut-url">Link</label>
+                <input id="shortcut-url" type="text" autocomplete="url" placeholder="example.com" required>
+            </div>
+            <div id="shortcut-picker-wrap" hidden>
+                <label for="shortcut-picker">Choose a shortcut</label>
+                <select id="shortcut-picker"></select>
+            </div>
+            <p id="shortcut-error" class="shortcut-error" role="alert"></p>
+            <div class="dialog-actions">
+                <button class="secondary-button" type="button" data-dialog-cancel>Cancel</button>
+                <button id="shortcut-submit" class="primary-button" type="submit">Add Shortcut</button>
+            </div>
+        </form>
+    </dialog>
+    <script src = "newTab.js"></script>
+</body>
+</html>

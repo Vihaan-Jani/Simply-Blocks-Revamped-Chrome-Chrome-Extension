@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workspace Dashboard</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Simply Blocks Workspace</h1>
+    <p class="subtitle">A Quick Overview of Your Environment</p>
+  </div>
+
+  <div class="glass-card">
+    <div class="section-header">Active Modules</div>
+    
+    <div class="grid-container">
+      
+    <div class="interactive-card" id="liveEditorCard">
+        <div class="card-meta">
+            <span class="card-title">Live Editor</span>
+            <span class="card-desc">Launch the Live Editor</span>
+        </div>
+            <span class="status-badge" id="liveEditorStatus">Disconnected</span>
+    </div>
+
+      <div class="interactive-card" id="BlockCard">
+        <div class="card-meta">
+          <span class="card-title" >Block Workspace</span>
+          <span class="card-desc">Create/Manage Blocks</span>
+        </div>
+        <span class="status-badge" id="blockWorkspaceStatus">Disconnected</span>
+      </div>
+      <div class="interactive-card auto-scroll-card" id="autoScrollCard">
+        <div class="card-meta">
+          <span class="card-title">Auto-Scroller</span>
+          <span class="card-desc">Automatically Scroll Websites/Pages</span>
+        </div>
+        <div class="auto-scroll-controls">
+          <div class="speed-options" aria-label="Auto-scroll speed">
+            <button class="speed-option" type="button" data-speed="slow">Slow</button>
+            <button class="speed-option" type="button" data-speed="medium">Medium</button>
+            <button class="speed-option" type="button" data-speed="fast">Fast</button>
+          </div>
+          <span class="status-badge" id="autoScrollStatus" aria-live="polite">Stopped</span>
+        </div>
+      </div>
+      <div class="interactive-card" id = "settings">
+        <div class="card-meta">
+          <span class="card-title">Your Profile</span>
+          <span class="card-desc">Settings</span>
+        </div>
+        <span class="status-badge">Account Information</span>
+      </div>
+
+      <div class="interactive-card" id="howToCard" role="button" tabindex="0">
+        <div class="card-meta">
+          <span class="card-title">How To Use Simply Blocks</span>
+          <span class="card-desc">Click here to Access a Simply Made User Guide</span>
+        </div>
+        <span class="status-badge">Open Guide</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="glass-card">
+    <div class="section-header">Environment Info</div>
+    <div class="environment-info" style="font-size: 0.8rem; color: #94a3b8; display: flex; flex-direction: column; gap: 6px;">
+      <div style="display: flex; justify-content: space-between;">
+        <span>Platform Connection</span>
+        <span style="color: #f1f5f9; font-weight: 500;">Chrome Native</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Manifest Model</span>
+        <span style="color: #f1f5f9; font-weight: 500;">Version 3</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Simply Blocks Version #</span>
+        <span style="color: #f1f5f9; font-weight: 500;">1.0.0</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Updated Last</span>
+        <span style="color: #f1f5f9; font-weight: 500;">8/1/25</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Developer</span>
+        <span style="color: #f1f5f9; font-weight: 500;">Vihaan Jani</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Co-Developer</span>
+        <span style="color: #f1f5f9; font-weight: 500;">Akhil Kamisetty</span>
+      </div>
+    </div>
+  </div>
+  <script src = "blockWorkspace.js"></script>
+  <script src = "liveEditor.js"></script>
+  <script src="autoScroller.js"></script>
+  <script src = "profile.js"></script>
+  <script src="howtoLauncher.js"></script>
+</body>
+</html>

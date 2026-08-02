@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Make Block</title>
+  <link rel="stylesheet" href="makeBlock.css">
+</head>
+
+
+<body>
+
+
+<div class="main-container">
+
+
+  <div>
+
+    <h1 class="title">
+      Make Block
+    </h1>
+
+    <p class="subtitle">
+      Create a new block from a resource.
+    </p>
+
+  </div>
+
+
+
+  <div class="glass-card">
+
+    <div class="section-header">
+      Instructions
+    </div>
+
+
+    <p class="description">
+      To create a block, enter the URL of the resource you want to convert.
+      Simply Blocks will use this information to create a customizable block
+      inside your Blocks Tab (on Sidebar) and add that URL into a Google Tab Group which will
+      be titled "Simply Blocks".
+    </p>
+
+
+    <input
+      class="url-box"
+      id = "urlInput"
+      type="url"
+      placeholder="Enter URL..."
+      aria-describedby="blockFormStatus"
+    >
+
+    <div class="block-details">
+      <label>
+        <span>Block Name</span>
+        <input class="url-box" id="blockNameInput" type="text" maxlength="50" placeholder="Name your block...">
+      </label>
+      <label class="block-color-field">
+        <span>Block Color</span>
+        <input id="blockColorInput" type="color" value="#7c3aed" aria-label="Choose block color">
+      </label>
+    </div>
+
+    <p class="block-form-status" id="blockFormStatus" role="status" aria-live="polite"></p>
+
+
+  </div>
+
+
+
+  <button class="interactive-card" id="createBlock" type="button">
+
+    <div>
+
+      <div class="card-title">
+        Create Block
+      </div>
+
+      <div class="card-desc">
+        Generate a new block from your URL.
+      </div>
+
+    </div>
+
+
+    <div class="action">
+      Create
+    </div>
+
+
+  </button>
+
+
+  <button class="interactive-card" id="removeBlock" type="button">
+
+    <div>
+      <div class="card-title">Remove Block</div>
+      <div class="card-desc">Remove a Saved Block</div>
+    </div>
+
+    <div class="action">Remove</div>
+
+  </button>
+
+
+
+  <button class="interactive-card" id="backToEditor" type="button">
+
+    <div>
+
+      <div class="card-title">
+        Back to Editor
+      </div>
+
+      <div class="card-desc">
+        Return to the Workspace.
+      </div>
+
+    </div>
+
+
+    <div class="action">
+      Open
+    </div>
+
+
+  </button>
+
+
+</div>
+
+<div class="remove-block-overlay" id="removeBlockOverlay" hidden>
+  <section class="remove-block-dialog" role="dialog" aria-modal="true" aria-labelledby="removeBlockTitle">
+    <h2 id="removeBlockTitle">Remove Block</h2>
+    <p>Select the saved block you want to remove.</p>
+    <div class="saved-block-list" id="savedBlockList"></div>
+    <p class="remove-block-empty" id="removeBlockEmpty" hidden>No Saved Blocks Are Available.</p>
+    <div class="remove-block-actions">
+      <button type="button" id="cancelRemoveBlock">Cancel</button>
+    </div>
+  </section>
+</div>
+
+
+<script src="makeBlock.js"></script>
+
+</body>
+
+</html>

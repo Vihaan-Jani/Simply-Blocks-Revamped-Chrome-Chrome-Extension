@@ -1,0 +1,15 @@
+:root {
+    --middle-background-color: #220a38;
+}
+
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #030204, var(--middle-background-color), #0f0114);
+    transition: background 0.2s ease;
+}

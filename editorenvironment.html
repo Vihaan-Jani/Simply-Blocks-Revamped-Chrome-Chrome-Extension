@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor Environment</title>
+    <link rel="stylesheet" href="newTab.css">
+    <link rel="stylesheet" href="editorenvironment.css">
+</head>
+<body>
+    <main class="editor-app" aria-label="Document editor">
+        <header class="editor-header">
+            <div class="document-identity">
+                <input
+                    class="document-title"
+                    id="documentTitle"
+                    type="text"
+                    value=""
+                    aria-label="Document title"
+                    spellcheck="true"
+                >
+                <span class="save-status" id="saveStatus" aria-live="polite"></span>
+            </div>
+
+        </header>
+
+        <nav class="editor-toolbar" aria-label="Document formatting">
+            <div class="toolbar-rail">
+            <div class="toolbar-group toolbar-style-group" role="group" aria-label="Text style">
+            <select class="toolbar-select format-select" id="blockFormat" aria-label="Paragraph style">
+                <option value="p">Normal Text</option>
+                <option value="h1">Heading 1</option>
+                <option value="h2">Heading 2</option>
+                <option value="h3">Heading 3</option>
+                <option value="blockquote">Quotes</option>
+            </select>
+
+            <input
+                class="toolbar-select font-select"
+                id="fontName"
+                type="text"
+                value=""
+                placeholder="Arial"
+                autocomplete="off"
+                spellcheck="false"
+                aria-label="Font family"
+                aria-controls="fontMenu"
+                aria-expanded="false"
+                role="combobox"
+                title="Enter any installed font"
+            >
+
+            <label class="size-field" title="Font size">
+                <input
+                    class="size-select"
+                    id="fontSize"
+                    type="number"
+                    value="12"
+                    min="1"
+                    max="500"
+                    step="0.5"
+                    inputmode="decimal"
+                    aria-label="Font size in points"
+                >
+                <span aria-hidden="true">pt</span>
+            </label>
+            </div>
+
+            <div class="toolbar-group" role="group" aria-label="History">
+            <button class="toolbar-button" type="button" data-command="undo" aria-label="Undo" title="Undo (Ctrl+Z)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5"/><path d="M5 12h8a6 6 0 0 1 6 6"/></svg></button>
+            <button class="toolbar-button" type="button" data-command="redo" aria-label="Redo" title="Redo (Ctrl+Y)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 7 5 5-5 5"/><path d="M19 12h-8a6 6 0 0 0-6 6"/></svg></button>
+            </div>
+            <div class="toolbar-group" role="group" aria-label="Emphasis">
+            <button class="toolbar-button text-button" type="button" data-command="bold" aria-label="Bold" title="Bold (Ctrl+B)"><strong>B</strong></button>
+            <button class="toolbar-button text-button" type="button" data-command="italic" aria-label="Italic" title="Italic (Ctrl+I)"><em>I</em></button>
+            <button class="toolbar-button text-button" type="button" data-command="underline" aria-label="Underline" title="Underline (Ctrl+U)"><u>U</u></button>
+            <button class="toolbar-button text-button" type="button" data-command="strikeThrough" aria-label="Strikethrough" title="Strikethrough"><s>S</s></button>
+
+            <label class="color-control" title="Text color">
+                <span>A</span>
+                <input id="foreColor" type="color" value="#111827" aria-label="Text color">
+            </label>
+            <label class="color-control highlight-control" title="Highlight color">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 11 4 4 7-7-4-4-7 7Z"/><path d="m6 14 4 4-2 2H4v-4l2-2Z"/><path d="M13 20h8"/></svg>
+                <input id="hiliteColor" type="color" value="#fef08a" aria-label="Highlight color">
+            </label>
+            </div>
+
+            <div class="toolbar-group" role="group" aria-label="Paragraph alignment">
+            <button class="toolbar-button" type="button" data-command="justifyLeft" aria-label="Align left" title="Align left"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 10h11M4 14h16M4 18h11"/></svg></button>
+            <button class="toolbar-button" type="button" data-command="justifyCenter" aria-label="Align center" title="Align center"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 10h10M4 14h16M7 18h10"/></svg></button>
+            <button class="toolbar-button" type="button" data-command="justifyRight" aria-label="Align right" title="Align right"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M9 10h11M4 14h16M9 18h11"/></svg></button>
+            </div>
+            <div class="toolbar-group" role="group" aria-label="Lists and indentation">
+            <button class="toolbar-button" type="button" data-command="insertUnorderedList" aria-label="Bulleted list" title="Bulleted list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg></button>
+            <button class="toolbar-button" type="button" data-command="insertOrderedList" aria-label="Numbered list" title="Numbered list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6h10M10 12h10M10 18h10"/><path d="M4 5h1v3M4 11h2l-2 3h2M4 17h2l-2 3h2"/></svg></button>
+            <button class="toolbar-button" type="button" data-command="outdent" aria-label="Decrease indent" title="Decrease indent"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6h9M11 12h9M4 18h16"/><path d="m7 9-3 3 3 3"/></svg></button>
+            <button class="toolbar-button" type="button" data-command="indent" aria-label="Increase indent" title="Increase indent"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6h9M11 12h9M4 18h16"/><path d="m4 9 3 3-3 3"/></svg></button>
+            <button class="toolbar-button" id="linkButton" type="button" aria-label="Insert link" title="Insert link"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 15 6-6"/><path d="m7 17-1 1a3.5 3.5 0 0 1-5-5l3-3a3.5 3.5 0 0 1 5 0"/><path d="m17 7 1-1a3.5 3.5 0 0 1 5 5l-3 3a3.5 3.5 0 0 1-5 0"/></svg></button>
+            <button class="toolbar-button" id="workspaceImageButton" type="button" aria-label="Insert Image Or Slide Asset" title="Insert Image Or Slide Asset"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m4 17 5-5 4 4 2-2 5 5"/></svg></button>
+            <button class="toolbar-button text-button" id="workspacePageBreakButton" type="button" aria-label="Insert Google Docs Page Break" title="Insert Google Docs Page Break"><strong>PB</strong></button>
+            </div>
+            </div>
+        </nav>
+
+        <section class="editor-workspace">
+            <div class="no-document-state" id="noDocumentState">
+                <span class="no-document-icon">◇</span>
+                <h2>No Document Currently Opened</h2>
+                <p>Create or Open a New Document</p>
+            </div>
+            <article
+                class="document-page"
+                id="documentPage"
+                contenteditable="true"
+                role="textbox"
+                aria-multiline="true"
+                aria-label="Document content"
+                spellcheck="true"
+                hidden
+            >
+                <p><br></p>
+            </article>
+        </section>
+
+        <footer class="editor-footer">
+            <span id="documentCount">0 words · 0 characters</span>
+            <span>Simply Blocks Document Editor</span>
+        </footer>
+
+        <input
+            id="documentImportInput"
+            type="file"
+            accept=".txt,.md,.markdown,.csv,.json,.xml,.css,.js,text/plain,text/markdown,text/csv,application/json,application/xml,text/xml,text/css,text/javascript,application/javascript"
+            hidden
+        >
+
+        <div class="document-start-overlay" id="documentStartOverlay" hidden>
+            <section
+                class="document-start-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="documentStartTitle"
+            >
+                <p class="start-eyebrow">Simply Blocks Editor</p>
+                <h1 id="documentStartTitle">Create a document</h1>
+                <p class="start-description">
+                    Choose a name and file type for your new Document.
+                </p>
+
+                <form class="new-document-options" id="newDocumentOptions">
+                    <label>
+                        <span>Document name</span>
+                        <input id="newDocumentName" type="text" value="Untitled document" autocomplete="off">
+                    </label>
+                    <label>
+                        <span>File type</span>
+                        <select id="newDocumentType">
+                            <optgroup label="Simply Blocks files">
+                                <option value="txt">Plain text (.txt)</option>
+                                <option value="md">Markdown (.md)</option>
+                            </optgroup>
+                            <optgroup label="Google Workspace">
+                                <option value="google-doc">Google Doc</option>
+                                <option value="google-sheet">Google Sheet</option>
+                                <option value="google-slides">Google Slides</option>
+                                <option value="google-pdf">PDF Document</option>
+                            </optgroup>
+                        </select>
+                    </label>
+                    <div class="new-document-buttons">
+                        <button class="dialog-secondary" id="cancelNewDocument" type="button">Cancel</button>
+                        <button class="dialog-primary" type="submit">Create document</button>
+                    </div>
+                </form>
+
+                <p class="start-error" id="documentStartError" role="alert"></p>
+            </section>
+        </div>
+
+        <div class="document-start-overlay" id="exportOverlay" hidden>
+            <section class="document-start-dialog export-dialog" role="dialog" aria-modal="true" aria-labelledby="exportDialogTitle">
+                <p class="start-eyebrow">Export Document</p>
+                <h1 id="exportDialogTitle">Choose a file type</h1>
+                <p class="start-description">Select the format you want to create.</p>
+
+                <div class="export-options">
+                    <button class="start-action-card export-option" type="button" data-export-format="txt">
+                        <span class="start-action-icon">TXT</span>
+                        <span><strong>Plain text</strong><small>Download a .txt copy</small></span>
+                    </button>
+                    <button class="start-action-card export-option" type="button" data-export-format="md">
+                        <span class="start-action-icon">MD</span>
+                        <span><strong>Markdown</strong><small>Download a .md copy</small></span>
+                    </button>
+                </div>
+
+                <div class="new-document-buttons export-cancel-row">
+                    <button class="dialog-secondary" id="cancelExport" type="button">Cancel</button>
+                </div>
+            </section>
+        </div>
+
+        <div class="document-start-overlay" id="closeDocumentOverlay" hidden>
+            <section class="document-start-dialog" role="dialog" aria-modal="true" aria-labelledby="closeDocumentTitle">
+                <p class="start-eyebrow">Close Document</p>
+                <h1 id="closeDocumentTitle">What would you like to do?</h1>
+                <p class="start-description">Choose what happens before this editor closes.</p>
+
+                <div class="export-options">
+                    <button class="start-action-card" id="closeContinueDrive" type="button" disabled>
+                        <span class="start-action-icon">&rarr;</span>
+                        <span><strong>Continue</strong><small>File will be Saved to Google Drive.</small></span>
+                    </button>
+                    <button class="start-action-card" id="closeSaveDocument" type="button">
+                        <span class="start-action-icon">✓</span>
+                        <span><strong>Save Document</strong><small>Save Your Document for Future Changes. A Blank Document will not be Saved.</small></span>
+                    </button>
+                    <button class="start-action-card" id="closeExportDocument" type="button">
+                        <span class="start-action-icon">↧</span>
+                        <span><strong>Export Your Document</strong><small>Download This Document</small></span>
+                    </button>
+                    <button class="start-action-card discard-option" id="closeDiscardDocument" type="button">
+                        <span class="start-action-icon">×</span>
+                        <span><strong>Discard Document</strong><small>Lose Saved or Unsaved Changes</small></span>
+                    </button>
+                    <button class="start-action-card" id="returnToEditor" type="button">
+                        <span class="start-action-icon">↩</span>
+                        <span><strong>Return</strong><small>Return Back to the Editor</small></span>
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <div class="document-start-overlay" id="markdownFlowConflictOverlay" hidden>
+            <section class="document-start-dialog" role="dialog" aria-modal="true" aria-labelledby="markdownFlowConflictTitle">
+                <p class="start-eyebrow">Markdown File Flow</p>
+                <h1 id="markdownFlowConflictTitle">A saved document already exists</h1>
+                <p class="start-description">Choose what should happen before creating a Markdown file for the block workspace.</p>
+                <div class="export-options">
+                    <button class="start-action-card discard-option" id="markdownFlowDiscard" type="button">
+                        <span class="start-action-icon">&times;</span>
+                        <span><strong>Discard changes</strong><small>Replace the saved editor document with a new Markdown file.</small></span>
+                    </button>
+                    <button class="start-action-card" id="markdownFlowSaveCancel" type="button">
+                        <span class="start-action-icon">&#10003;</span>
+                        <span><strong>Save and cancel action</strong><small>Keep the current document and cancel the Markdown handoff.</small></span>
+                    </button>
+                </div>
+                <p class="start-error" id="markdownFlowConflictStatus" role="status"></p>
+            </section>
+        </div>
+
+        <div class="document-start-overlay" id="markdownImportTargetOverlay" hidden>
+            <section class="document-start-dialog" role="dialog" aria-modal="true" aria-labelledby="markdownImportTargetTitle">
+                <p class="start-eyebrow">Markdown saved</p>
+                <h1 id="markdownImportTargetTitle">Add it to an Import block?</h1>
+                <p class="start-description">Choose the specific Import block that should receive this Markdown file.</p>
+                <div class="export-options" id="markdownImportTargets"></div>
+                <p class="start-error" id="markdownImportTargetStatus" role="status"></p>
+                <div class="new-document-buttons">
+                    <button class="dialog-secondary" id="cancelMarkdownImportTarget" type="button">Not now</button>
+                </div>
+            </section>
+        </div>
+
+        <div class="link-preview-overlay" id="linkPreviewOverlay" hidden>
+            <section class="link-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="linkPreviewTitle">
+                <header class="link-preview-header">
+                    <div>
+                        <p class="start-eyebrow">Link Preview</p>
+                        <h1 id="linkPreviewTitle">Ready to visit this site?</h1>
+                    </div>
+                    <button class="link-preview-close" id="closeLinkPreview" type="button" aria-label="Close link preview">×</button>
+                </header>
+
+                <p class="link-preview-url" id="linkPreviewUrl"></p>
+
+                <div class="link-preview-frame-wrap">
+                    <iframe
+                        id="linkPreviewFrame"
+                        title="Website preview"
+                        src="about:blank"
+                        sandbox="allow-forms allow-scripts allow-same-origin"
+                        referrerpolicy="no-referrer"
+                    ></iframe>
+                    <p class="link-preview-note">If the preview stays blank, the website does not allow embedded previews.</p>
+                </div>
+
+                <div class="link-preview-actions">
+                    <button class="dialog-secondary" id="cancelLinkPreview" type="button">Cancel</button>
+                    <button class="dialog-primary" id="openPreviewedLink" type="button">Open Site</button>
+                </div>
+            </section>
+        </div>
+
+        <div class="document-start-overlay" id="customFontOverlay" hidden>
+            <section class="document-start-dialog custom-font-dialog" role="dialog" aria-modal="true" aria-labelledby="customFontTitle">
+                <p class="start-eyebrow">Custom Typography</p>
+                <h1 id="customFontTitle">Load a Custom Font</h1>
+                <p class="start-description">Name your Font and choose a WOFF, WOFF2, TTF, or OTF file.</p>
+
+                <form class="new-document-options" id="customFontForm">
+                    <label>
+                        <span>Font Name</span>
+                        <input id="customFontName" type="text" placeholder="My custom font" maxlength="80" autocomplete="off" required>
+                    </label>
+                    <label>
+                        <span>Font File</span>
+                        <input id="customFontFile" type="file" accept=".woff,.woff2,.ttf,.otf,font/woff,font/woff2,font/ttf,font/otf" required>
+                    </label>
+                    <p class="custom-font-feedback" id="customFontFeedback" role="status"></p>
+                    <div class="new-document-buttons">
+                        <button class="dialog-secondary" id="cancelCustomFont" type="button">Cancel</button>
+                        <button class="dialog-primary" id="loadCustomFont" type="submit">Load Font</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+
+        <div class="font-menu" id="fontMenu" role="listbox" aria-label="Font suggestions" hidden></div>
+
+        <div class="document-start-overlay" id="drivePickerOverlay" hidden>
+            <section class="document-start-dialog drive-picker-dialog" role="dialog" aria-modal="true" aria-labelledby="drivePickerTitle">
+                <header class="drive-picker-header">
+                    <div>
+                        <p class="start-eyebrow">Google Drive</p>
+                        <h1 id="drivePickerTitle">Select A Drive File</h1>
+                        <p class="start-description">Browse Your Google Drive Folders And Choose A File.</p>
+                    </div>
+                    <button class="link-preview-close" id="closeDrivePicker" type="button" aria-label="Close Google Drive File Selector">&times;</button>
+                </header>
+                <div class="drive-picker-status" id="drivePickerStatus" role="status">Loading Your Drive Files...</div>
+                <div class="drive-browser-toolbar">
+                    <button id="driveBackButton" type="button" disabled>Back</button>
+                    <nav id="driveBreadcrumbs" class="drive-breadcrumbs" aria-label="Google Drive Folder Path"></nav>
+                    <input id="driveFileSearch" type="search" placeholder="Search This Folder" aria-label="Search This Folder">
+                </div>
+                <div class="drive-file-list" id="driveFileList"></div>
+                <div class="new-document-buttons drive-picker-actions">
+                    <button class="dialog-secondary" id="cancelDrivePicker" type="button">Cancel</button>
+                    <button class="dialog-primary" id="refreshDrivePicker" type="button">Refresh Files</button>
+                </div>
+            </section>
+        </div>
+
+        <div class="document-start-overlay" id="workspaceImageOverlay" hidden>
+            <section class="document-start-dialog" role="dialog" aria-modal="true" aria-labelledby="workspaceImageTitle">
+                <p class="start-eyebrow">Insert Image</p>
+                <h1 id="workspaceImageTitle">Add An Image From The Web</h1>
+                <p class="start-description">Enter The Image's Direct Web Destination.</p>
+                <form class="new-document-options" id="workspaceImageForm">
+                    <label>
+                        <span>Image Link</span>
+                        <input id="workspaceImageUrl" type="url" placeholder="https://example.com/image.png" autocomplete="url" required>
+                    </label>
+                    <p class="start-error" id="workspaceImageError" role="alert"></p>
+                    <div class="new-document-buttons">
+                        <button class="dialog-secondary" id="cancelWorkspaceImage" type="button">Cancel</button>
+                        <button class="dialog-primary" type="submit">Insert Image</button>
+                    </div>
+                </form>
+                <div class="slide-asset-options" id="slideAssetOptions">
+                    <p class="asset-section-title">Google Slides Assets</p>
+                    <div class="asset-button-grid" id="slideEmojiOptions" aria-label="Insert Emoji">
+                        <button type="button" data-slide-emoji="😀">😀</button>
+                        <button type="button" data-slide-emoji="❤️">❤️</button>
+                        <button type="button" data-slide-emoji="⭐">⭐</button>
+                        <button type="button" data-slide-emoji="✅">✅</button>
+                        <button type="button" data-slide-emoji="🚀">🚀</button>
+                    </div>
+                    <div class="asset-button-grid" id="slideShapeOptions" aria-label="Insert Shape">
+                        <button type="button" data-slide-shape="RECTANGLE">Rectangle</button>
+                        <button type="button" data-slide-shape="ELLIPSE">Ellipse</button>
+                        <button type="button" data-slide-shape="TRIANGLE">Triangle</button>
+                        <button type="button" data-slide-shape="RIGHT_ARROW">Arrow</button>
+                        <button type="button" data-slide-shape="STAR_5">Star</button>
+                    </div>
+                    <div class="asset-source-buttons">
+                        <button class="dialog-secondary" id="chooseDriveSlideImage" type="button">Choose From Google Drive</button>
+                        <label class="dialog-secondary local-image-label">Choose From This Device<input id="localSlideImage" type="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden></label>
+                    </div>
+                    <p class="asset-privacy-note">Device and private Drive images receive temporary link access during insertion. Access is revoked immediately afterward.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+    <script src="theme.js"></script>
+    <script src="vendor/pdfjs/pdf.min.js"></script>
+    <script src="vendor/pdf-lib/pdf-lib.min.js"></script>
+    <script type="module" src="editorWorkspacePanel.js"></script>
+    <script type="module" src="editorDocument.js"></script>
+    <script type="module" src="googleDrivePicker.js"></script>
+    <script type="module" src="googleWorkspaceRenderer.js"></script>
+    <script src="websiteStyles.js"></script>
+</body>
+</html>
