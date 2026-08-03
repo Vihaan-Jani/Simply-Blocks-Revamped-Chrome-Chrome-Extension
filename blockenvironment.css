@@ -74,6 +74,9 @@ main {
 .workspace-panel-content {
     padding-top: 54px;
 }
+.workspace-drive-picker-card {
+    display: none;
+}
 
 .workspace-profile-card {
     position: fixed;
