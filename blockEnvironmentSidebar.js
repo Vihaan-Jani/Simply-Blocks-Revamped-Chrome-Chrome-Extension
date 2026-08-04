@@ -102,12 +102,17 @@ function addBlockSidebarButtons() {
     const editBlockType = document.getElementById("editBlockType");
     const editBlockPromptField = document.getElementById("editBlockPromptField");
     const editBlockPrompt = document.getElementById("editBlockPrompt");
+    const editImportFilePicker = document.getElementById("editImportFilePicker");
+    const pickEditImportFile = document.getElementById("pickEditImportFile");
+    const pickedEditImportFile = document.getElementById("pickedEditImportFile");
+    const editImportFileInput = document.getElementById("editImportFileInput");
     const editBlockColor = document.getElementById("editBlockColor");
     const editBlockStatus = document.getElementById("editBlockStatus");
     const deleteEditedBlock = document.getElementById("deleteEditedBlock");
     let selectedFileBlockName = "Save";
     let editingBlockId = null;
     let selectedImportFile = null;
+    let selectedEditImportFile = null;
     const MAX_IMPORT_FILE_BYTES = 5 * 1024 * 1024;
 
     const deleteBlockById = async (blockId) => {
@@ -133,6 +138,14 @@ function addBlockSidebarButtons() {
     const closeEditBlockPopup = () => {
         editBlockOverlay.hidden = true;
         editingBlockId = null;
+        selectedEditImportFile = null;
+        editImportFileInput.value = "";
+    };
+
+    const updateEditFileFields = () => {
+        const isImport = !editBlockTypeField.hidden && editBlockType.value === "Import";
+        editBlockPromptField.hidden = editBlockTypeField.hidden || editBlockType.value !== "Export";
+        editImportFilePicker.hidden = !isImport;
     };
 
     const openEditBlockPopup = (block) => {
@@ -148,15 +161,33 @@ function addBlockSidebarButtons() {
         editBlockType.value = isFileBlock ? block.name : "Save";
         editBlockPromptField.hidden = !isFileBlock || block.name !== "Export";
         editBlockPrompt.value = block.prompt || "";
+        selectedEditImportFile = null;
+        editImportFileInput.value = "";
+        pickedEditImportFile.textContent = block.file?.name || "No Markdown file selected";
         editBlockColor.value = /^#[0-9a-f]{6}$/i.test(block.color) ? block.color : "#7c3aed";
         editBlockStatus.textContent = "";
         editBlockOverlay.hidden = false;
+        updateEditFileFields();
         (isFileBlock ? editBlockType : editBlockName).focus();
     };
 
     closeEditBlock.addEventListener("click", closeEditBlockPopup);
     editBlockType.addEventListener("change", () => {
-        editBlockPromptField.hidden = editBlockType.value !== "Export";
+        updateEditFileFields();
+    });
+    pickEditImportFile.addEventListener("click", () => {
+        editImportFileInput.value = "";
+        editImportFileInput.click();
+    });
+    editImportFileInput.addEventListener("change", () => {
+        selectedEditImportFile = editImportFileInput.files?.[0] || null;
+        if (selectedEditImportFile && !selectedEditImportFile.name.toLowerCase().endsWith(".md")) {
+            selectedEditImportFile = null;
+            editBlockStatus.textContent = "Only Markdown (.md) files can be attached.";
+        } else {
+            editBlockStatus.textContent = "";
+        }
+        pickedEditImportFile.textContent = selectedEditImportFile?.name || "No Markdown file selected";
     });
     editBlockOverlay.addEventListener("click", (event) => {
         if (event.target === editBlockOverlay) closeEditBlockPopup();
@@ -190,6 +221,13 @@ function addBlockSidebarButtons() {
                     block.prompt = editBlockPrompt.value.trim();
                 } else {
                     delete block.prompt;
+                }
+                if (block.name === "Import" && selectedEditImportFile) {
+                    block.file = await serializeFile(selectedEditImportFile);
+                    block.fileReceivedAt = Date.now();
+                } else if (block.name !== "Import") {
+                    delete block.file;
+                    delete block.fileReceivedAt;
                 }
             } else {
                 let url = editBlockUrl.value.trim();
@@ -404,6 +442,7 @@ function addBlockSidebarButtons() {
     };
 
     const transformMarkdownWithAI = async (block, file, inputMode = "attachment", usedTabIds) => {
+        const requiredBridgeVersion = "2026.08.04.23";
         const requestId = crypto.randomUUID();
         const host = new URL(block.url).hostname;
         console.log("[CHAIN] Opening or locating AI tab:", host, "request:", requestId);
@@ -411,6 +450,19 @@ function addBlockSidebarButtons() {
         if (tab?.id == null) throw new Error("The connected AI tab could not be opened.");
         usedTabIds?.add(tab.id);
         await waitForTabReady(tab.id);
+        let bridgeInfo = await chrome.tabs.sendMessage(tab.id, {
+            type: "simplyBlocksAIFileBridgeVersion"
+        }).catch(() => null);
+        if (bridgeInfo?.version !== requiredBridgeVersion) {
+            await chrome.tabs.reload(tab.id);
+            await waitForTabReady(tab.id);
+            bridgeInfo = await chrome.tabs.sendMessage(tab.id, {
+                type: "simplyBlocksAIFileBridgeVersion"
+            }).catch(() => null);
+        }
+        if (bridgeInfo?.version !== requiredBridgeVersion) {
+            throw new Error(`${host} did not load the current Simply Blocks AI bridge.`);
+        }
         console.log("[CHAIN] Sending input to AI tab:", host, "mode:", inputMode);
         let result;
         try {
@@ -655,6 +707,7 @@ function addBlockSidebarButtons() {
         let previousAIPlatform = "";
         let editorFileToOpen = null;
         const usedBlockTabIds = new Set();
+        let completed = false;
         try {
             const workspaceTab = await chrome.tabs.getCurrent();
             const latest = await chrome.storage.local.get("simplyBlocks");
@@ -683,8 +736,7 @@ function addBlockSidebarButtons() {
                         console.log("[CHAIN] Opening or locating Gemini");
                         if (previousAIPlatform === "chatgpt") {
                             if (!chatGPTOutput.trim()) throw new Error("ChatGPT output was empty.");
-                            file = { ...file, contents: chatGPTOutput, size: new Blob([chatGPTOutput]).size };
-                            console.log("[CHAIN] Sending ChatGPT output to Gemini", chatGPTOutput);
+                            console.log("[CHAIN] Sending the current Markdown file with ChatGPT output to Gemini", file.contents);
                         }
                     }
                     next.lastFileAction = "processing-ai";
@@ -693,7 +745,7 @@ function addBlockSidebarButtons() {
                         const transformedFile = await transformMarkdownWithAI(
                             next,
                             file,
-                            fileRevision > 0 ? "inline" : "attachment",
+                            "attachment",
                             usedBlockTabIds
                         );
                         if (nextPlatform === "chatgpt") {
@@ -716,12 +768,18 @@ function addBlockSidebarButtons() {
                     await focusWorkspaceTab(workspaceTab);
                 }
                 if (next.type === "file" && next.name === "Export" && next.prompt?.trim()) {
-                    const contents = `${next.prompt.trim()}\n\n${file.contents || ""}`;
+                    const followingBlock = byId.get(next.connectedToBlockId);
+                    if (!followingBlock?.url) {
+                        throw new Error("Connect an Export block with a prompt directly to the AI that should process it.");
+                    }
+                    const prompt = next.prompt.trim();
+                    const contents = `${file.contents || ""}\n\n${prompt}`.trim();
                     file = {
                         ...file,
                         contents,
                         size: new Blob([contents]).size,
-                        lastModified: Date.now()
+                        lastModified: Date.now(),
+                        pendingPrompt: prompt
                     };
                 }
                 next.file = { ...file };
@@ -787,9 +845,23 @@ function addBlockSidebarButtons() {
             }
             if (editorFileToOpen) await openMarkdownInLiveEditor(editorFileToOpen);
             await new Promise((resolve) => setTimeout(resolve, 450));
+            completed = true;
         } catch (error) {
             window.alert(error?.message || "The file flow could not be completed.");
         } finally {
+            if (completed) {
+                try {
+                    const latest = await chrome.storage.local.get("simplyBlocks");
+                    const resetBlocks = (Array.isArray(latest.simplyBlocks) ? latest.simplyBlocks : []).map((block) => {
+                        const clean = { ...block };
+                        ["file", "fileReceivedAt", "lastFileAction", "fileError", "driveFile"].forEach((key) => delete clean[key]);
+                        return clean;
+                    });
+                    await chrome.storage.local.set({ simplyBlocks: resetBlocks });
+                } catch (error) {
+                    console.error("The completed file flow could not be reset:", error);
+                }
+            }
             workflowState = "idle";
             flowProcessedBlockIds.clear();
             flowProcessedLineIds.clear();
@@ -964,8 +1036,8 @@ function addBlockSidebarButtons() {
                     : block.lastFileAction === "save-failed"
                         ? " · Drive save failed"
                         : "";
-            fileDetail.textContent = block.file?.name
-                ? `${block.file.name}${fileActionLabel}`
+            fileDetail.textContent = block.name === "Import" && block.file?.name
+                ? block.file.name
                 : block.fileError || fileActionLabel.replace(/^\s*·\s*/, "") ||
                     (isFileBlock && block.name === "Import" ? "Drop a Markdown file here" : "File-Block");
             connector.className = "environment-block-connector";
@@ -976,7 +1048,7 @@ function addBlockSidebarButtons() {
             connectionLine.style.setProperty("--block-color", block.color || "#7c3aed");
             header.append(icon, name);
             element.append(header);
-            if (isFileBlock || block.file || block.lastFileAction || block.fileError) element.append(fileDetail);
+            if (isFileBlock) element.append(fileDetail);
             editButton.type = "button";
             editButton.className = "environment-block-edit";
             editButton.textContent = "✎";
