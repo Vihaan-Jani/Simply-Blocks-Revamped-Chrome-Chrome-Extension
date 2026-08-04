@@ -72,9 +72,14 @@
                         <option value="Export">Export</option>
                     </select>
                 </label>
-                <label id="editBlockPromptField" hidden>Prompt added to the top
+                <label id="editBlockPromptField" hidden>Prompt sent to the preceding AI
                     <textarea id="editBlockPrompt" rows="5" maxlength="10000" placeholder="Example: Rewrite this document as a concise project brief."></textarea>
                 </label>
+                <div class="file-block-picker" id="editImportFilePicker" hidden>
+                    <button id="pickEditImportFile" class="file-block-pick" type="button">Pick Markdown</button>
+                    <span id="pickedEditImportFile">No Markdown file selected</span>
+                    <input id="editImportFileInput" type="file" accept=".md,text/markdown" hidden>
+                </div>
                 <label>Block color<input id="editBlockColor" type="color"></label>
                 <div class="edit-block-actions">
                     <button class="edit-block-delete" id="deleteEditedBlock" type="button">Delete Block</button>
