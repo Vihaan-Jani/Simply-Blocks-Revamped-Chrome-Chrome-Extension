@@ -60,7 +60,6 @@ function initializeNewTab() {
     const currentWindow = await chrome.windows.getCurrent();
     if (currentTab?.id == null || currentWindow?.id == null) return;
     let panelOpen = false;
-    let fullscreenActive = false;
 
     await chrome.sidePanel.setOptions({ tabId: currentTab.id, path: "index.html", enabled: true });
 
@@ -78,18 +77,7 @@ function initializeNewTab() {
       newTabSidePanelToggle.setAttribute("aria-pressed", "false");
     };
 
-    const updateFullscreenState = async () => {
-      const windowState = await chrome.windows.getCurrent();
-      const isFullscreen = windowState.state === "fullscreen" || Boolean(document.fullscreenElement);
-      const enteringFullscreen = isFullscreen && !fullscreenActive;
-      fullscreenActive = isFullscreen;
-      if (enteringFullscreen) await closeSidePanel();
-      newTabSidePanelToggle.hidden = !isFullscreen;
-      newTabSidePanelToggle.disabled = !isFullscreen;
-    };
-
     newTabSidePanelToggle.addEventListener("click", () => {
-      if (!fullscreenActive) return;
       newTabSidePanelToggle.disabled = true;
       if (panelOpen) {
         const operation = chrome.sidePanel.close
@@ -122,9 +110,6 @@ function initializeNewTab() {
         newTabSidePanelToggle.setAttribute("aria-pressed", "false");
       }
     });
-    chrome.windows.onBoundsChanged.addListener(() => updateFullscreenState().catch(console.error));
-    document.addEventListener("fullscreenchange", () => updateFullscreenState().catch(console.error));
-    await updateFullscreenState();
   };
 
   initializeFullscreenSidePanel().catch((error) => {
