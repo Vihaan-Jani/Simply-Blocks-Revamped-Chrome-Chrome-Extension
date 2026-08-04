@@ -38,11 +38,15 @@ async function addWorkspacePanel() {
     const driveText = document.createElement("span");
     const driveTitle = document.createElement("span");
     const driveDescription = document.createElement("span");
+    const sidebarScroll = document.createElement("div");
 
     panel.className = "side-panel";
     panel.setAttribute("aria-label", "Workspace panel");
 
     panelContent.className = "panel-content workspace-panel-content";
+
+    sidebarScroll.className = "workspace-sidebar-scroll";
+    sidebarScroll.setAttribute("aria-label", "Editor actions");
 
     profileCard.className = "workspace-profile-card";
     profileCard.type = "button";
@@ -85,7 +89,8 @@ async function addWorkspacePanel() {
         trigger.append(document.createElement("span"));
     }
 
-    document.body.append(panel, trigger, profileCard, driveCard);
+    sidebarScroll.append(profileCard, driveCard);
+    document.body.append(panel, trigger, sidebarScroll);
     document.dispatchEvent(new CustomEvent("simplyBlocksWorkspacePanelReady"));
 
     function showPanel(expanded) {
