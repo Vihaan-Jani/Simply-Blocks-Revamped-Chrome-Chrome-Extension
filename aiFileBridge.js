@@ -1,16 +1,25 @@
 (() => {
-    const BRIDGE_VERSION = "2026.08.01.9";
+    const BRIDGE_VERSION = "2026.08.04.23";
     if (globalThis.__simplyBlocksAIFileBridgeVersion === BRIDGE_VERSION) return;
     globalThis.__simplyBlocksAIFileBridgeVersion = BRIDGE_VERSION;
 
     const LOG = "[CHAIN]";
-    const RESPONSE_TIMEOUT_MS = 85000;
+    const RESPONSE_TIMEOUT_MS = 180000;
     const UI_TIMEOUT_MS = 30000;
 
     const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
     const rendered = (element) => Boolean(element && element.isConnected && element.getClientRects().length);
     const visible = (element) => Boolean(rendered(element) && !element.disabled);
     const normalized = (value) => String(value || "").replace(/\r\n/g, "\n").replace(/\u00a0/g, " ").trim();
+    const comparableText = (value) => normalized(value).replace(/\s+/g, " ");
+    const composerContains = (actual, expected) => {
+        const comparableActual = comparableText(actual);
+        const comparableExpected = comparableText(expected);
+        return Boolean(comparableExpected) && (
+            comparableActual === comparableExpected ||
+            comparableActual.includes(comparableExpected)
+        );
+    };
     const textOf = (element) => normalized(element?.innerText || element?.textContent);
 
     function platform() {
@@ -104,18 +113,29 @@
     }
 
     function dispatchComposerEvents(composer, value) {
-        composer.dispatchEvent(new InputEvent("beforeinput", {
-            bubbles: true,
-            cancelable: true,
-            inputType: "insertText",
-            data: value
-        }));
         composer.dispatchEvent(new InputEvent("input", {
             bubbles: true,
             inputType: "insertText",
             data: value
         }));
         composer.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    async function composerAccepted(composer, value, timeout = 1500) {
+        const deadline = Date.now() + timeout;
+        do {
+            if (composerContains(composerValue(composer), value)) return true;
+            await sleep(50);
+        } while (Date.now() < deadline);
+        return false;
+    }
+
+    function selectComposerContents(composer) {
+        const selection = getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(composer);
+        selection.removeAllRanges();
+        selection.addRange(range);
     }
 
     async function insertAndVerify(composer, value) {
@@ -125,24 +145,34 @@
             Object.getOwnPropertyDescriptor(prototype, "value").set.call(composer, value);
             dispatchComposerEvents(composer, value);
         } else {
-            const selection = getSelection();
-            const range = document.createRange();
-            range.selectNodeContents(composer);
-            selection.removeAllRanges();
-            selection.addRange(range);
+            selectComposerContents(composer);
             document.execCommand("delete", false);
-            const inserted = document.execCommand("insertText", false, value);
-            if (!inserted || composerValue(composer) !== normalized(value)) {
-                composer.replaceChildren(document.createTextNode(value));
+            document.execCommand("insertText", false, value);
+            if (!await composerAccepted(composer, value, 750)) {
+                selectComposerContents(composer);
+                const transfer = new DataTransfer();
+                transfer.setData("text/plain", value);
+                composer.dispatchEvent(new ClipboardEvent("paste", {
+                    bubbles: true,
+                    cancelable: true,
+                    clipboardData: transfer
+                }));
+            }
+            if (!await composerAccepted(composer, value, 750)) {
+                const lines = String(value).split("\n");
+                const paragraphs = lines.map((line) => {
+                    const paragraph = document.createElement("p");
+                    paragraph.textContent = line;
+                    return paragraph;
+                });
+                composer.replaceChildren(...paragraphs);
                 dispatchComposerEvents(composer, value);
             }
         }
-        await Promise.resolve();
+        await composerAccepted(composer, value, 1500);
         const actual = composerValue(composer);
-        if (actual !== normalized(value)) {
-            throw new Error(platform() === "gemini"
-                ? "Gemini did not receive the ChatGPT output."
-                : `${platform()} did not receive the complete input.`);
+        if (!composerContains(actual, value)) {
+            throw new Error(`${platform()} did not receive the complete upstream input.`);
         }
         return actual;
     }
@@ -196,12 +226,41 @@
         return normalized(fenced ? fenced[1] : trimmed);
     }
 
+    function renderedMarkdown(root) {
+        const convert = (node, listDepth = 0) => {
+            if (node.nodeType === Node.TEXT_NODE) return node.textContent || "";
+            if (!(node instanceof Element) || /^(BUTTON|SVG|STYLE|SCRIPT)$/.test(node.tagName)) return "";
+            const children = () => [...node.childNodes].map((child) => convert(child, listDepth)).join("");
+            const content = children();
+            if (/^H[1-6]$/.test(node.tagName)) return `${"#".repeat(Number(node.tagName[1]))} ${content.trim()}\n\n`;
+            if (node.tagName === "P") return `${content.trim()}\n\n`;
+            if (node.tagName === "BR") return "\n";
+            if (node.tagName === "STRONG" || node.tagName === "B") return `**${content}**`;
+            if (node.tagName === "EM" || node.tagName === "I") return `*${content}*`;
+            if (node.tagName === "A") return `[${content.trim() || node.href}](${node.href})`;
+            if (node.tagName === "PRE") return `\n\`\`\`\n${node.innerText.trim()}\n\`\`\`\n\n`;
+            if (node.tagName === "CODE") return `\`${content}\``;
+            if (node.tagName === "LI") {
+                const ordered = node.parentElement?.tagName === "OL";
+                const number = ordered ? `${[...node.parentElement.children].indexOf(node) + 1}.` : "-";
+                return `${"  ".repeat(listDepth)}${number} ${content.trim()}\n`;
+            }
+            if (node.tagName === "UL" || node.tagName === "OL") {
+                return `${[...node.children].map((child) => convert(child, listDepth + 1)).join("")}\n`;
+            }
+            if (node.tagName === "BLOCKQUOTE") return `${content.trim().split("\n").map((line) => `> ${line}`).join("\n")}\n\n`;
+            if (node.tagName === "HR") return "\n---\n\n";
+            return content;
+        };
+        return cleanMarkdown(convert(root).replace(/\n{3,}/g, "\n\n"));
+    }
+
     function responseMarkdownText(response) {
-        if (platform() !== "gemini") return textOf(response);
-        const content = [...response.querySelectorAll(".markdown, .model-response-text, message-content")]
-            .filter(visible)
-            .at(-1);
-        return textOf(content || response);
+        const selector = platform() === "gemini"
+            ? ".markdown, .model-response-text, message-content"
+            : ".markdown.prose, [class*='markdown']";
+        const content = [...response.querySelectorAll(selector)].filter(visible).at(-1);
+        return renderedMarkdown(content || response);
     }
 
     async function linkedMarkdown(response) {
@@ -250,7 +309,8 @@
                 const stableFor = Date.now() - stableSince;
                 // Measure fallback stability from response text only so unrelated
                 // page animations cannot delay the in-memory handoff.
-                const completeSignal = (Boolean(findSendButton()) && !generationIsRunning()) || stableFor >= 600;
+                const requiredStableTime = platform() === "gemini" ? 2000 : 1500;
+                const completeSignal = !generationIsRunning() && stableFor >= requiredStableTime;
                 if (!completeSignal) {
                     if (!timer) {
                         timer = setTimeout(() => {
@@ -283,9 +343,12 @@
         });
     }
 
-    async function findFileInput() {
+    async function findFileInput(composer) {
         const choose = () => {
-            const inputs = [...document.querySelectorAll("input[type='file']")].filter((input) => !input.disabled);
+            const form = composer?.closest("form");
+            const scopedInputs = form ? [...form.querySelectorAll("input[type='file']")] : [];
+            const inputs = [...scopedInputs, ...document.querySelectorAll("input[type='file']")]
+                .filter((input, index, all) => !input.disabled && all.indexOf(input) === index);
             return inputs.find((input) => !input.accept || /text|markdown|document|\.md/i.test(input.accept)) || inputs.at(-1);
         };
         if (choose()) return choose();
@@ -293,8 +356,8 @@
         return waitFor(choose, `${platform()} file input was not found.`, 8000);
     }
 
-    async function attachMarkdown(file) {
-        const input = await findFileInput();
+    async function attachMarkdown(file, composer) {
+        const input = await findFileInput(composer);
         const markdown = new File([file.contents || ""], file.name || "instructions.md", {
             type: "text/markdown",
             lastModified: Date.now()
@@ -304,27 +367,50 @@
         input.files = transfer.files;
         input.dispatchEvent(new Event("input", { bubbles: true }));
         input.dispatchEvent(new Event("change", { bubbles: true }));
-        await waitFor(
-            () => document.body.innerText.includes(markdown.name),
-            `${platform()} did not accept the Markdown attachment.`,
-            10000
-        );
+        if (input.files?.[0]?.name !== markdown.name) {
+            throw new Error(`${platform()} did not accept the Markdown attachment.`);
+        }
+        const attachmentVisible = () => {
+            const filename = markdown.name.toLowerCase();
+            return [...document.querySelectorAll("[data-testid*='attach' i],[data-testid*='file' i],[aria-label],[title]")]
+                .some((element) => rendered(element) && `${element.textContent || ""} ${element.getAttribute("aria-label") || ""} ${element.title || ""}`.toLowerCase().includes(filename)) ||
+                document.body.innerText.toLowerCase().includes(filename);
+        };
+        try {
+            await waitFor(attachmentVisible, "", 5000);
+        } catch {
+            const dropTarget = composer.closest("form") || composer;
+            ["dragenter", "dragover", "drop"].forEach((type) => {
+                dropTarget.dispatchEvent(new DragEvent(type, {
+                    bubbles: true,
+                    cancelable: true,
+                    dataTransfer: transfer
+                }));
+            });
+            await waitFor(
+                attachmentVisible,
+                `${platform()} did not visibly load ${markdown.name}; the flow was stopped before sending.`,
+                10000
+            );
+        }
     }
 
     async function submitAndCapture(file, inputMode, requestId) {
         console.log(LOG, `Request ${requestId} received by ${platform()}`);
         const baseline = responseSnapshot();
-        // All supported composers accept text directly. Keep the handoff entirely
-        // in memory instead of uploading a temporary file to each AI service.
-        const effectiveInputMode = "inline";
         const composer = await waitFor(findComposer, platform() === "gemini" ? "Gemini input field was not found." : `${platform()} input field was not found.`);
-        const prompt = effectiveInputMode === "inline"
-            ? file.contents || ""
-            : "Follow every instruction in the attached Markdown file. Return only the complete resulting Markdown, without commentary or an outer code fence.";
+        const executionDirective = [
+            "Execute the instructions in the supplied Markdown now.",
+            "Do not ask questions or offer options; make reasonable assumptions.",
+            "Return only clean, readable Markdown with descriptive headings, short paragraphs, and lists, tables, or fenced code blocks where useful.",
+            "Do not use HTML and do not wrap the entire response in a code fence."
+        ].join(" ");
+        const useInlineMarkdown = platform() === "gemini";
+        if (!useInlineMarkdown) await attachMarkdown(file, composer);
+        const prompt = useInlineMarkdown
+            ? `${executionDirective}\n\n--- BEGIN MARKDOWN FILE: ${file.name || "input.md"} ---\n${file.contents || ""}\n--- END MARKDOWN FILE ---`
+            : `${executionDirective} Read the attached Markdown file, preserve its existing Markdown structure, and format every addition so the combined file remains valid and easy to read as a Markdown document.`;
         await insertAndVerify(composer, prompt);
-        if (effectiveInputMode === "inline" && !composerValue(composer).includes(normalized(file.contents))) {
-            throw new Error(platform() === "gemini" ? "Gemini did not receive the ChatGPT output." : `${platform()} did not receive the upstream output.`);
-        }
         const send = await waitFor(findSendButton, `${platform()} send button was not found.`);
         send.click();
         await waitFor(
@@ -333,16 +419,38 @@
         );
         console.log(LOG, `${platform()} submission completed`);
         const contents = await waitForCompletedResponse(baseline);
-        return {
+        let existingContents = String(file.contents || "");
+        const pendingPrompt = String(file.pendingPrompt || "");
+        if (pendingPrompt) {
+            const promptIndex = existingContents.lastIndexOf(pendingPrompt);
+            if (promptIndex >= 0 && !existingContents.slice(promptIndex + pendingPrompt.length).trim()) {
+                existingContents = existingContents.slice(0, promptIndex).trimEnd();
+            }
+        }
+        const requestsPromptRetention = /(?:keep|include|retain|preserve)\s+(?:the\s+)?(?:original\s+)?(?:prompt|instructions?)(?:\s+(?:in|as|with|part\s+of)\b)?/i
+            .test(existingContents);
+        if (!file.hasAIResponse && !requestsPromptRetention) existingContents = "";
+        const combinedContents = [existingContents.trim(), contents.trim()].filter(Boolean).join("\n\n");
+        const result = {
             ...file,
             type: "text/markdown",
-            size: new Blob([contents]).size,
+            size: new Blob([combinedContents]).size,
             lastModified: Date.now(),
-            contents
+            contents: combinedContents,
+            hasAIResponse: true
         };
+        delete result.pendingPrompt;
+        return result;
     }
 
-    chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (globalThis.__simplyBlocksAIFileBridgeHandler) {
+        chrome.runtime.onMessage.removeListener(globalThis.__simplyBlocksAIFileBridgeHandler);
+    }
+    globalThis.__simplyBlocksAIFileBridgeHandler = (message, _sender, sendResponse) => {
+        if (message?.type === "simplyBlocksAIFileBridgeVersion") {
+            sendResponse({ version: BRIDGE_VERSION, platform: platform() });
+            return false;
+        }
         if (message?.type !== "simplyBlocksRunMarkdownAI") return false;
         const requestId = message.requestId || crypto.randomUUID();
         submitAndCapture(message.file, message.inputMode || "attachment", requestId)
@@ -352,7 +460,8 @@
                 sendResponse({ ok: false, requestId, platform: platform(), error: error?.message || "AI processing failed." });
             });
         return true;
-    });
+    };
+    chrome.runtime.onMessage.addListener(globalThis.__simplyBlocksAIFileBridgeHandler);
 
     console.log(LOG, `AI bridge ready on ${platform()}:`, location.href);
 })();
