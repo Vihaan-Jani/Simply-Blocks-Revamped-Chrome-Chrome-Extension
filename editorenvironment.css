@@ -948,6 +948,53 @@ iframe.drive-binary-viewer { width: min(1000px, calc(100vw - 150px)); height: ca
     left: 35px;
 }
 
+.workspace-sidebar-scroll {
+    position: fixed;
+    z-index: 4;
+    top: 48px;
+    bottom: 0;
+    left: 0;
+    width: 70px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 6px 11px 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139, 92, 246, 0.65) transparent;
+    transition: width 0.5s ease;
+}
+
+.side-panel.expanded ~ .workspace-sidebar-scroll {
+    width: 485px;
+}
+
+.workspace-sidebar-scroll::-webkit-scrollbar {
+    width: 7px;
+}
+
+.workspace-sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.workspace-sidebar-scroll::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(139, 92, 246, 0.65);
+}
+
+.workspace-sidebar-scroll .workspace-profile-card,
+.workspace-sidebar-scroll .workspace-drive-picker-card,
+.workspace-sidebar-scroll .workspace-editor-sidebar-card {
+    position: relative;
+    inset: auto;
+    flex: 0 0 48px;
+}
+
+.workspace-sidebar-scroll .workspace-editor-close-card {
+    margin-top: auto;
+}
+
 .workspace-panel-content {
     padding-top: 120px;
 }
@@ -975,12 +1022,12 @@ iframe.drive-binary-viewer { width: min(1000px, calc(100vw - 150px)); height: ca
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.side-panel.expanded ~ .workspace-drive-picker-card {
+.side-panel.expanded ~ .workspace-sidebar-scroll .workspace-drive-picker-card {
     width: 454px;
     padding-right: 16px;
 }
 
-.side-panel.expanded ~ .workspace-drive-picker-card .workspace-action-text {
+.side-panel.expanded ~ .workspace-sidebar-scroll .workspace-drive-picker-card .workspace-action-text {
     opacity: 1;
     transform: translateX(0);
     transition-delay: 0.25s;
@@ -1143,7 +1190,7 @@ iframe.drive-binary-viewer { width: min(1000px, calc(100vw - 150px)); height: ca
     padding: 5px;
 }
 
-.side-panel.expanded ~ .workspace-action-card.workspace-drive-picker-card {
+.side-panel.expanded ~ .workspace-sidebar-scroll .workspace-action-card.workspace-drive-picker-card {
     width: 454px;
     padding-right: 16px;
 }
@@ -1213,7 +1260,7 @@ iframe.drive-binary-viewer { width: min(1000px, calc(100vw - 150px)); height: ca
     bottom: 12px;
 }
 
-.side-panel.expanded ~ .workspace-editor-sidebar-card {
+.side-panel.expanded ~ .workspace-sidebar-scroll .workspace-editor-sidebar-card {
     width: 454px;
     padding-right: 16px;
 }
@@ -1227,7 +1274,7 @@ iframe.drive-binary-viewer { width: min(1000px, calc(100vw - 150px)); height: ca
         0 0 0 1px rgba(192, 132, 252, 0.15);
 }
 
-.side-panel.expanded ~ .workspace-profile-card {
+.side-panel.expanded ~ .workspace-sidebar-scroll .workspace-profile-card {
     width: 454px;
     padding-right: 16px;
 }
@@ -1292,7 +1339,7 @@ iframe.drive-binary-viewer { width: min(1000px, calc(100vw - 150px)); height: ca
 }
 
 .side-panel.expanded
-    ~ .workspace-editor-sidebar-card
+    ~ .workspace-sidebar-scroll .workspace-editor-sidebar-card
     .workspace-action-text {
     opacity: 1;
     transform: translateX(0);
@@ -1314,7 +1361,7 @@ iframe.drive-binary-viewer { width: min(1000px, calc(100vw - 150px)); height: ca
         transform 0.2s ease;
 }
 
-.side-panel.expanded ~ .workspace-profile-card .workspace-profile-card-text {
+.side-panel.expanded ~ .workspace-sidebar-scroll .workspace-profile-card .workspace-profile-card-text {
     opacity: 1;
     transform: translateX(0);
     transition-delay: 0.25s;
@@ -1370,6 +1417,7 @@ iframe.drive-binary-viewer { width: min(1000px, calc(100vw - 150px)); height: ca
 
     .side-panel,
     .customize,
+    .workspace-sidebar-scroll,
     .workspace-profile-card,
     .workspace-editor-sidebar-card,
     .editor-header,
