@@ -1102,7 +1102,8 @@ function addSidebarActions() {
         updateDriveContinueButton();
         closeDocumentOverlay.hidden = false;
     });
-    document.body.append(
+    const sidebarScroll = document.querySelector(".workspace-sidebar-scroll");
+    (sidebarScroll || document.body).append(
         documentInfoCard,
         toolbarCard,
         printCard,
